@@ -1,0 +1,19 @@
+# نظام الملفات
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# محررات وأدوات
+.idea/
+.vscode/
+*.sublime-*
+
+# سجلات
+*.log
+npm-debug.log*
+
+# مؤقت
+*.tmp
+*.temp
+*.swp
+*~

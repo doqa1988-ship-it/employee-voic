@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة صوت الموظف | المؤسسة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="dashboard-wrap">
+    <aside class="dashboard-sidebar">
+      <a href="index.html" class="sidebar-logo" title="الرئيسية">
+        <img src="ww.jpeg" alt="شعار المنصة" id="logoImg" onerror="typeof window.tryLogo==='function'&&window.tryLogo(this)">
+        <span>منصة صوت الموظف</span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="active">الرئيسية</a>
+        <a href="submit.html">تقديم شكوى</a>
+        <a href="track.html">متابعة شكوى</a>
+        <a href="dashboard.html" id="navAdmin" class="nav-admin" style="display: none;">لوحة المتابعة</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" id="navLogin">تسجيل الدخول</a>
+        <a href="#" id="navLogout" style="display: none;">تسجيل الخروج</a>
+      </div>
+    </aside>
+    <div class="dashboard-body">
+      <header class="dashboard-topbar">
+        <div class="topbar-title">
+          <h1>الرئيسية</h1>
+          <p>مرحباً بكم في منصة صوت الموظف</p>
+        </div>
+        <a href="index.html" class="topbar-logo-left" title="الرئيسية">
+          <img src="شعار.png" alt="شعار" class="topbar-logo-img" onerror="this.onerror=null;this.src='شعار.jpg';">
+          <span class="topbar-logo-caption">البنك المركزي العراقي</span>
+        </a>
+      </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>مرحباً بكم في منصة صوت الموظف</h1>
+      <p>قناة آمنة وسرية لتقديم ملاحظاتكم وشكاويكم. نلتزم بالاستماع والمعالجة في إطار سياسة واضحة وشفافة.</p>
+      <div class="hero-actions">
+        <a href="submit.html" class="btn btn-primary">تقديم شكوى جديدة</a>
+        <a href="track.html" class="btn btn-outline">متابعة شكوى مقدمة</a>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <h3>🔒 سرية تامة</h3>
+        <p>إمكانية التقديم بشكل مجهول، مع ضمان عدم الكشف عن هويتك دون موافقتك.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📋 متابعة واضحة</h3>
+        <p>تتبع حالة شكواك من الاستلام حتى الإغلاق مع إشعارات عند كل تحديث.</p>
+      </div>
+      <div class="feature-card">
+        <h3>⚖️ معالجة عادلة</h3>
+        <p>جميع الشكاوى تُدرس وفق إجراءات موحدة وسياسة عدم الانتقام.</p>
+      </div>
+    </section>
+
+    <section id="loginForm" class="card login-box" style="display: none;">
+      <h2 class="card-title">تسجيل الدخول (للمسؤول / موارد بشرية)</h2>
+      <form id="loginFormEl" onsubmit="return handleLogin(event)">
+        <div class="form-group">
+          <label for="username">اسم المستخدم</label>
+          <input type="text" id="username" name="username" placeholder="اسم المستخدم" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="loginError" class="alert alert-warning" style="display: none;">اسم المستخدم أو كلمة المرور غير صحيحة.</div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    منصة صوت الموظف © — للموظفين فقط. سرية البيانات محفوظة.
+  </footer>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    window.tryLogo = function(img) {
+      var next = img.dataset.next || 'ww.jpg';
+      if (next === 'none') { img.style.display='none'; if(img.nextElementSibling) img.nextElementSibling.style.display='block'; return; }
+      img.dataset.next = (next === 'ww.jpg' ? 'ww.jpeg' : next === 'ww.jpeg' ? 'ww.webp' : 'none');
+      if (next !== 'none') img.src = next;
+    };
+    updateNav();
+    document.getElementById('navLogin').addEventListener('click', function(e) {
+      e.preventDefault();
+      var form = document.getElementById('loginForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      document.getElementById('loginError').style.display = 'none';
+    });
+    var logoutBtn = document.getElementById('navLogout');
+    if (logoutBtn) logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      logout();
+      updateNav();
+      window.location.href = 'index.html';
+    });
+    function handleLogin(e) {
+      e.preventDefault();
+      var username = document.getElementById('username').value.trim();
+      var pass = document.getElementById('password').value;
+      var err = document.getElementById('loginError');
+      if (login(username, pass)) {
+        window.location.href = 'dashboard.html';
+        return false;
+      }
+      err.style.display = 'block';
+      return false;
+    }
+    function showLoginIfHash() {
+      if (window.location.hash === '#loginForm') document.getElementById('loginForm').style.display = 'block';
+    }
+    showLoginIfHash();
+    window.addEventListener('hashchange', showLoginIfHash);
+  </script>
+</body>
+</html>

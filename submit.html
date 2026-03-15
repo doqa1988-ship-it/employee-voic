@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقديم شكوى | منصة صوت الموظف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="dashboard-wrap">
+    <aside class="dashboard-sidebar">
+      <a href="index.html" class="sidebar-logo" title="الرئيسية">
+        <img src="ww.jpeg" alt="شعار المنصة">
+        <span>منصة صوت الموظف</span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="index.html">الرئيسية</a>
+        <a href="submit.html" class="active">تقديم شكوى</a>
+        <a href="track.html">متابعة شكوى</a>
+        <a href="dashboard.html" id="navAdmin" style="display: none;">لوحة المتابعة</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html#loginForm" id="navLogin">تسجيل الدخول</a>
+        <a href="#" id="navLogout" style="display: none;">تسجيل الخروج</a>
+      </div>
+    </aside>
+    <div class="dashboard-body">
+      <header class="dashboard-topbar">
+        <div class="topbar-title">
+          <h1>تقديم شكوى</h1>
+          <p>تقديم شكوى جديدة بشكل آمن وسري</p>
+        </div>
+        <a href="index.html" class="topbar-logo-left" title="الرئيسية">
+          <img src="شعار.png" alt="شعار" class="topbar-logo-img" onerror="this.onerror=null;this.src='شعار.jpg';">
+          <span class="topbar-logo-caption">البنك المركزي العراقي</span>
+        </a>
+      </header>
+
+  <main class="main submit-page">
+    <div class="card">
+      <h2 class="card-title">تقديم شكوى جديدة</h2>
+      <div class="alert alert-info">
+        يمكنك تقديم الشكوى مع أو بدون ذكر هويتك. في كل الحالات نلتزم بسرية المعالجة وعدم الانتقام.
+      </div>
+
+      <form id="complaintForm" onsubmit="return handleSubmitComplaint(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">نوع الشكوى *</label>
+            <select id="category" name="category" required>
+              <option value="">-- اختر النوع --</option>
+              <optgroup label="شكاوى إدارية">
+                <option value="abuse_power">سوء استخدام السلطة</option>
+                <option value="unfair_work">عدم العدالة في توزيع العمل</option>
+              </optgroup>
+              <optgroup label="شكاوى وظيفية">
+                <option value="promotions">الترقيات</option>
+                <option value="annual_eval">التقييم السنوي</option>
+                <option value="transfer">النقل أو التكليف</option>
+              </optgroup>
+              <optgroup label="شكاوى سلوكية">
+                <option value="bullying">التنمر الوظيفي</option>
+                <option value="harassment">التحرش</option>
+                <option value="mistreatment">سوء المعاملة</option>
+              </optgroup>
+              <optgroup label="شكاوى تنظيمية">
+                <option value="work_procedures">إجراءات العمل</option>
+                <option value="work_env">بيئة العمل</option>
+                <option value="lack_resources">نقص الموارد</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="department">القسم (اختياري)</label>
+            <select id="department" name="department">
+              <option value="">-- اختر القسم --</option>
+              <option value="hr">الموارد البشرية</option>
+              <option value="it">تقنية المعلومات</option>
+              <option value="finance">المالية</option>
+              <option value="operations">العمليات</option>
+              <option value="sales">المبيعات</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="subject">عنوان الشكوى *</label>
+          <input type="text" id="subject" name="subject" placeholder="ملخص مختصر" required maxlength="120">
+        </div>
+
+        <div class="form-group">
+          <label for="description">تفاصيل الشكوى *</label>
+          <textarea id="description" name="description" placeholder="اشرح التفاصيل بشكل واضح مع التاريخ إن أمكن..." required minlength="20"></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="anonymous" name="anonymous">
+            <label for="anonymous">تقديم الشكوى بشكل مجهول (لن نكشف هويتك)</label>
+          </div>
+        </div>
+
+        <div id="contactFields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">الاسم (اختياري)</label>
+              <input type="text" id="name" name="name" placeholder="الاسم الكامل">
+            </div>
+            <div class="form-group">
+              <label for="email">البريد الإلكتروني</label>
+              <input type="email" id="email" name="email" placeholder="example@company.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="employeeNumber">الرقم الوظيفي</label>
+            <input type="text" id="employeeNumber" name="employeeNumber" placeholder="رقم الموظف أو الهوية">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="incidentDate">تاريخ الحادثة</label>
+            <input type="date" id="incidentDate" name="incidentDate">
+          </div>
+          <div class="form-group">
+            <label class="label-block">درجة السرية</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="confidentiality" value="confidential" id="confidential" checked>
+                <span class="radio-label">سرية</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="confidentiality" value="disclosed" id="disclosed">
+                <span class="radio-label">معلنة</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="attachments">مرفقات (اختياري)</label>
+          <input type="file" id="attachments" name="attachments" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+          <small style="color: var(--text-muted); font-size: 0.85rem;">PDF, Word, صور. الحد الأقصى 5 ميجا للملف.</small>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+          <button type="submit" class="btn btn-primary">إرسال الشكوى</button>
+          <a href="index.html" class="btn btn-ghost">إلغاء</a>
+        </div>
+      </form>
+    </div>
+
+    <div id="successMessage" class="card" style="display: none;">
+      <h2 class="card-title" style="color: var(--success);">تم استلام شكواك بنجاح</h2>
+      <p>رقم التتبع: <strong id="trackingNumber"></strong></p>
+      <p style="color: var(--text-muted); margin-top: 0.5rem;">احتفظ بهذا الرقم لمتابعة حالة الشكوى. سنراجعها ونرد خلال الفترة المحددة في السياسة.</p>
+      <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">العودة للرئيسية</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    منصة صوت الموظف © — سرية البيانات محفوظة.
+  </footer>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    updateNav();
+    document.getElementById('navLogout').addEventListener('click', function(e) { e.preventDefault(); logout(); window.location.href = 'index.html'; });
+    document.getElementById('anonymous').addEventListener('change', function() {
+      document.getElementById('contactFields').style.display = this.checked ? 'none' : 'block';
+    });
+
+    function handleSubmitComplaint(e) {
+      e.preventDefault();
+      var form = document.getElementById('complaintForm');
+      var tracking = 'SHK-' + Date.now().toString(36).toUpperCase();
+      var confEl = document.querySelector('input[name="confidentiality"]:checked');
+      localStorage.setItem('complaints', JSON.stringify([
+        ...(JSON.parse(localStorage.getItem('complaints') || '[]')),
+        {
+          id: tracking,
+          category: document.getElementById('category').value,
+          department: document.getElementById('department').value,
+          subject: document.getElementById('subject').value,
+          description: document.getElementById('description').value,
+          anonymous: document.getElementById('anonymous').checked,
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          employeeNumber: document.getElementById('employeeNumber').value,
+          incidentDate: document.getElementById('incidentDate').value,
+          confidentiality: confEl ? confEl.value : 'confidential',
+          status: 'new',
+          createdAt: new Date().toISOString()
+        }
+      ]));
+      document.getElementById('trackingNumber').textContent = tracking;
+      form.style.display = 'none';
+      document.getElementById('successMessage').style.display = 'block';
+      return false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة المتابعة | منصة صوت الموظف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="dashboard-wrap">
+    <aside class="dashboard-sidebar">
+      <a href="index.html" class="sidebar-logo" title="الرئيسية">
+        <img src="ww.jpeg" alt="شعار المنصة">
+        <span>منصة صوت الموظف</span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="index.html">الرئيسية</a>
+        <a href="submit.html">تقديم شكوى</a>
+        <a href="track.html">متابعة شكوى</a>
+        <a href="dashboard.html" id="navAdmin" class="active">لوحة المتابعة</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html#loginForm" id="navLogin" style="display: none;">تسجيل الدخول</a>
+        <a href="#" id="navLogout">تسجيل الخروج</a>
+      </div>
+    </aside>
+    <div class="dashboard-body">
+      <header class="dashboard-topbar">
+        <div class="topbar-title">
+          <h1>لوحة المتابعة</h1>
+          <p>مرحباً، <strong id="adminName"></strong> — إدارة ومتابعة الشكاوى</p>
+        </div>
+        <a href="index.html" class="topbar-logo-left" title="الرئيسية">
+          <img src="شعار.png" alt="شعار" class="topbar-logo-img" onerror="this.onerror=null;this.src='شعار.jpg';">
+          <span class="topbar-logo-caption">البنك المركزي العراقي</span>
+        </a>
+      </header>
+
+  <main class="main">
+    <div class="card">
+      <h2 class="card-title">قائمة الشكاوى</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">عرض وإدارة الشكاوى الواردة ومتابعة حالتها.</p>
+
+      <div class="form-row" style="margin-bottom: 1.5rem;">
+        <div class="form-group">
+          <label for="filterStatus">الحالة</label>
+          <select id="filterStatus">
+            <option value="">الكل</option>
+            <option value="new">مستلمة</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="progress">قيد المعالجة</option>
+            <option value="resolved">تمت المعالجة</option>
+            <option value="closed">مغلقة</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="filterCategory">النوع</label>
+          <select id="filterCategory">
+            <option value="">الكل</option>
+            <optgroup label="شكاوى إدارية">
+              <option value="abuse_power">سوء استخدام السلطة</option>
+              <option value="unfair_work">عدم العدالة في توزيع العمل</option>
+            </optgroup>
+            <optgroup label="شكاوى وظيفية">
+              <option value="promotions">الترقيات</option>
+              <option value="annual_eval">التقييم السنوي</option>
+              <option value="transfer">النقل أو التكليف</option>
+            </optgroup>
+            <optgroup label="شكاوى سلوكية">
+              <option value="bullying">التنمر الوظيفي</option>
+              <option value="harassment">التحرش</option>
+              <option value="mistreatment">سوء المعاملة</option>
+            </optgroup>
+            <optgroup label="شكاوى تنظيمية">
+              <option value="work_procedures">إجراءات العمل</option>
+              <option value="work_env">بيئة العمل</option>
+              <option value="lack_resources">نقص الموارد</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>رقم التتبع</th>
+              <th>النوع</th>
+              <th>العنوان</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="complaintsTableBody">
+            <!-- يُملأ عبر JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
+        لا توجد شكاوى تطابق البحث. يمكنك <a href="submit.html">تقديم شكوى جديدة</a>.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">إحصائيات سريعة</h3>
+      <div class="stats-grid">
+        <div class="stat-card stat-primary">
+          <div id="statTotal" class="stat-value">0</div>
+          <div class="stat-label">إجمالي الشكاوى</div>
+        </div>
+        <div class="stat-card stat-info">
+          <div id="statNew" class="stat-value">0</div>
+          <div class="stat-label">مستلمة</div>
+        </div>
+        <div class="stat-card stat-warning">
+          <div id="statProgress" class="stat-value">0</div>
+          <div class="stat-label">قيد المعالجة</div>
+        </div>
+        <div class="stat-card stat-success">
+          <div id="statResolved" class="stat-value">0</div>
+          <div class="stat-label">تمت المعالجة</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    منصة صوت الموظف © — لوحة المتابعة للموارد البشرية.
+  </footer>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if (!requireAdmin()) throw new Error('redirect');
+    var adminName = sessionStorage.getItem(AUTH.KEY + '_name');
+    if (adminName) document.getElementById('adminName').textContent = adminName;
+    document.getElementById('navLogout').addEventListener('click', function(e) { e.preventDefault(); logout(); window.location.href = 'index.html'; });
+    var CATEGORY_LABELS = {
+      abuse_power: 'سوء استخدام السلطة',
+      unfair_work: 'عدم العدالة في توزيع العمل',
+      promotions: 'الترقيات',
+      annual_eval: 'التقييم السنوي',
+      transfer: 'النقل أو التكليف',
+      bullying: 'التنمر الوظيفي',
+      harassment: 'التحرش',
+      mistreatment: 'سوء المعاملة',
+      work_procedures: 'إجراءات العمل',
+      work_env: 'بيئة العمل',
+      lack_resources: 'نقص الموارد'
+    };
+    var STATUS_LABELS = {
+      new: 'مستلمة',
+      pending: 'قيد المراجعة',
+      progress: 'قيد المعالجة',
+      resolved: 'تمت المعالجة',
+      closed: 'مغلقة'
+    };
+    var STATUS_BADGE = {
+      new: 'badge-new',
+      pending: 'badge-pending',
+      progress: 'badge-progress',
+      resolved: 'badge-resolved',
+      closed: 'badge-closed'
+    };
+
+    function getComplaintsList() {
+      var list = JSON.parse(localStorage.getItem('complaints') || '[]');
+      if (list.length === 0) {
+        list = [
+          { id: 'SHK-DEMO1', category: 'unfair_work', department: 'it', subject: 'عدم العدالة في توزيع المهام', description: 'يتم تكليفي بمهام إضافية دون غيري في القسم دون مراعاة العبء الوظيفي. أرجو النظر في توزيع العمل بشكل عادل.', anonymous: true, status: 'progress', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), timeline: [{ at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'new', note: 'إنشاء الشكوى' }, { at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'progress', note: 'تم إحالة الشكوى للمراجعة' }] },
+          { id: 'SHK-DEMO2', category: 'promotions', department: 'operations', subject: 'استفسار عن آلية الترقية', description: 'أود الاستفسار عن معايير الترقية لهذا العام وكيفية التقديم.', anonymous: false, name: 'أحمد محمد', email: 'ahmed@company.com', status: 'resolved', createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() },
+          { id: 'SHK-DEMO3', category: 'harassment', subject: 'شكوى تتعلق بسلوك غير لائق', description: 'أود تقديم شكوى تتعلق بسلوك غير لائق في بيئة العمل. أرجو المعالجة بسرية.', anonymous: false, name: 'فاطمة علي', status: 'pending', createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() }
+        ];
+        localStorage.setItem('complaints', JSON.stringify(list));
+      }
+      return list;
+    }
+    function loadComplaints() {
+      var list = getComplaintsList();
+      var statusFilter = document.getElementById('filterStatus').value;
+      var categoryFilter = document.getElementById('filterCategory').value;
+      var filtered = list.filter(function(c) {
+        if (statusFilter && c.status !== statusFilter) return false;
+        if (categoryFilter && c.category !== categoryFilter) return false;
+        return true;
+      });
+
+      var tbody = document.getElementById('complaintsTableBody');
+      tbody.innerHTML = '';
+      document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
+
+      filtered.forEach(function(c) {
+        var tr = document.createElement('tr');
+        var date = c.createdAt ? new Date(c.createdAt).toLocaleDateString('ar-SA') : '-';
+        tr.innerHTML =
+          '<td><strong>' + (c.id || '-') + '</strong></td>' +
+          '<td>' + (CATEGORY_LABELS[c.category] || c.category) + '</td>' +
+          '<td>' + (c.subject || '-') + '</td>' +
+          '<td>' + date + '</td>' +
+          '<td><span class="badge ' + (STATUS_BADGE[c.status] || 'badge-closed') + '">' + (STATUS_LABELS[c.status] || c.status) + '</span></td>' +
+          '<td><div class="table-actions"><a href="complaint.html?id=' + encodeURIComponent(c.id) + '" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">عرض</a></div></td>';
+        tbody.appendChild(tr);
+      });
+
+      // Stats
+      document.getElementById('statTotal').textContent = list.length;
+      document.getElementById('statNew').textContent = list.filter(function(c) { return c.status === 'new'; }).length;
+      document.getElementById('statProgress').textContent = list.filter(function(c) { return c.status === 'pending' || c.status === 'progress'; }).length;
+      document.getElementById('statResolved').textContent = list.filter(function(c) { return c.status === 'resolved' || c.status === 'closed'; }).length;
+    }
+
+    document.getElementById('filterStatus').addEventListener('change', loadComplaints);
+    document.getElementById('filterCategory').addEventListener('change', loadComplaints);
+    loadComplaints();
+  </script>
+</body>
+</html>

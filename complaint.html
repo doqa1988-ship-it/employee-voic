@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل الشكوى | منصة صوت الموظف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="dashboard-wrap">
+    <aside class="dashboard-sidebar">
+      <a href="index.html" class="sidebar-logo" title="الرئيسية">
+        <img src="ww.jpeg" alt="شعار المنصة">
+        <span>منصة صوت الموظف</span>
+      </a>
+      <nav class="sidebar-nav">
+        <a href="index.html">الرئيسية</a>
+        <a href="submit.html">تقديم شكوى</a>
+        <a href="track.html">متابعة شكوى</a>
+        <a href="dashboard.html" id="navAdmin" class="active">لوحة المتابعة</a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="index.html#loginForm" id="navLogin" style="display: none;">تسجيل الدخول</a>
+        <a href="#" id="navLogout">تسجيل الخروج</a>
+      </div>
+    </aside>
+    <div class="dashboard-body">
+      <header class="dashboard-topbar">
+        <div class="topbar-title">
+          <h1>تفاصيل الشكوى</h1>
+          <p>عرض وتحديث حالة الشكوى</p>
+        </div>
+        <a href="index.html" class="topbar-logo-left" title="الرئيسية">
+          <img src="شعار.png" alt="شعار" class="topbar-logo-img" onerror="this.onerror=null;this.src='شعار.jpg';">
+          <span class="topbar-logo-caption">البنك المركزي العراقي</span>
+        </a>
+      </header>
+
+  <main class="main">
+    <div style="margin-bottom: 1rem;">
+      <a href="dashboard.html" class="btn btn-ghost">← العودة للوحة المتابعة</a>
+    </div>
+
+    <div id="complaintDetail" class="card">
+      <!-- يُملأ عبر JS -->
+    </div>
+
+    <div id="updateStatusCard" class="card" style="display: none;">
+      <h3 class="card-title">تحديث الحالة</h3>
+      <form id="updateStatusForm" onsubmit="return handleUpdateStatus(event)">
+        <div class="form-group">
+          <label for="newStatus">الحالة الجديدة</label>
+          <select id="newStatus" name="newStatus">
+            <option value="new">مستلمة</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="progress">قيد المعالجة</option>
+            <option value="resolved">تمت المعالجة</option>
+            <option value="closed">مغلقة</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="note">ملاحظة (اختياري)</label>
+          <textarea id="note" name="note" placeholder="توثيق القرار أو الخطوة التالية..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">حفظ التحديث</button>
+      </form>
+    </div>
+
+    <div id="timelineCard" class="card" style="display: none;">
+      <h3 class="card-title">سجل التحديثات</h3>
+      <div id="timelineList" class="timeline">
+        <!-- يُملأ عبر JS -->
+      </div>
+    </div>
+
+    <div id="notFound" class="card" style="display: none; text-align: center;">
+      <p style="color: var(--text-muted);">لم يتم العثور على الشكوى.</p>
+      <a href="dashboard.html" class="btn btn-primary" style="margin-top: 1rem;">العودة للوحة المتابعة</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    منصة صوت الموظف © — سرية البيانات محفوظة.
+  </footer>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if (!requireAdmin()) throw new Error('redirect');
+    document.getElementById('navLogout').addEventListener('click', function(e) { e.preventDefault(); logout(); window.location.href = 'index.html'; });
+    var CATEGORY_LABELS = {
+      abuse_power: 'سوء استخدام السلطة',
+      unfair_work: 'عدم العدالة في توزيع العمل',
+      promotions: 'الترقيات',
+      annual_eval: 'التقييم السنوي',
+      transfer: 'النقل أو التكليف',
+      bullying: 'التنمر الوظيفي',
+      harassment: 'التحرش',
+      mistreatment: 'سوء المعاملة',
+      work_procedures: 'إجراءات العمل',
+      work_env: 'بيئة العمل',
+      lack_resources: 'نقص الموارد'
+    };
+    var STATUS_LABELS = {
+      new: 'مستلمة',
+      pending: 'قيد المراجعة',
+      progress: 'قيد المعالجة',
+      resolved: 'تمت المعالجة',
+      closed: 'مغلقة'
+    };
+    var STATUS_BADGE = {
+      new: 'badge-new',
+      pending: 'badge-pending',
+      progress: 'badge-progress',
+      resolved: 'badge-resolved',
+      closed: 'badge-closed'
+    };
+
+    function getComplaintId() {
+      var params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    function loadComplaint() {
+      var id = getComplaintId();
+      if (!id) {
+        document.getElementById('notFound').style.display = 'block';
+        return;
+      }
+      var list = JSON.parse(localStorage.getItem('complaints') || '[]');
+      var c = list.find(function(x) { return x.id === id; });
+      if (!c) {
+        document.getElementById('notFound').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('complaintDetail').style.display = 'block';
+      document.getElementById('updateStatusCard').style.display = 'block';
+      document.getElementById('timelineCard').style.display = 'block';
+
+      var timeline = c.timeline || [{ at: c.createdAt, status: c.status, note: 'إنشاء الشكوى' }];
+
+      var confLabel = (c.confidentiality === 'disclosed') ? 'معلنة' : 'سرية';
+      document.getElementById('complaintDetail').innerHTML =
+        '<h2 class="card-title">' + (c.subject || 'بدون عنوان') + '</h2>' +
+        '<p style="margin-bottom: 0.5rem;"><span class="badge ' + (STATUS_BADGE[c.status] || 'badge-closed') + '">' + (STATUS_LABELS[c.status] || c.status) + '</span> &nbsp; رقم التتبع: <strong>' + c.id + '</strong></p>' +
+        '<div class="detail-section"><h4>نوع الشكوى</h4><p>' + (CATEGORY_LABELS[c.category] || c.category) + '</p></div>' +
+        (c.department ? '<div class="detail-section"><h4>القسم</h4><p>' + c.department + '</p></div>' : '') +
+        '<div class="detail-section"><h4>التفاصيل</h4><p>' + (c.description || '-').replace(/\n/g, '<br>') + '</p></div>' +
+        '<div class="detail-section"><h4>تاريخ التقديم</h4><p>' + (c.createdAt ? new Date(c.createdAt).toLocaleString('ar-SA') : '-') + '</p></div>' +
+        (c.incidentDate ? '<div class="detail-section"><h4>تاريخ الحادثة</h4><p>' + c.incidentDate + '</p></div>' : '') +
+        '<div class="detail-section"><h4>درجة السرية</h4><p>' + confLabel + '</p></div>' +
+        (c.anonymous ? '<p style="color: var(--text-muted); font-size: 0.9rem;">تم التقديم بشكل مجهول.</p>' : ('<div class="detail-section"><h4>مقدم الشكوى</h4><p>' + (c.name || '-') + (c.email ? ' &nbsp; ' + c.email : '') + (c.employeeNumber ? ' &nbsp; الرقم الوظيفي: ' + c.employeeNumber : '') + '</p></div>'));
+
+      document.getElementById('newStatus').value = c.status;
+
+      var tlHtml = '';
+      timeline.forEach(function(t) {
+        tlHtml += '<div class="timeline-item"><strong>' + (STATUS_LABELS[t.status] || t.status) + '</strong><br><small>' + (t.at ? new Date(t.at).toLocaleString('ar-SA') : '') + '</small>' + (t.note ? '<p style="margin-top: 0.25rem;">' + t.note + '</p>' : '') + '</div>';
+      });
+      document.getElementById('timelineList').innerHTML = tlHtml || '<p style="color: var(--text-muted);">لا يوجد سجل بعد.</p>';
+    }
+
+    function handleUpdateStatus(e) {
+      e.preventDefault();
+      var id = getComplaintId();
+      var list = JSON.parse(localStorage.getItem('complaints') || '[]');
+      var c = list.find(function(x) { return x.id === id; });
+      if (!c) return false;
+      var newStatus = document.getElementById('newStatus').value;
+      var note = document.getElementById('note').value;
+      c.status = newStatus;
+      c.timeline = c.timeline || [{ at: c.createdAt, status: c.status, note: 'إنشاء الشكوى' }];
+      c.timeline.push({ at: new Date().toISOString(), status: newStatus, note: note || 'تحديث الحالة' });
+      localStorage.setItem('complaints', JSON.stringify(list));
+      loadComplaint();
+      document.getElementById('note').value = '';
+      return false;
+    }
+
+    loadComplaint();
+  </script>
+</body>
+</html>
