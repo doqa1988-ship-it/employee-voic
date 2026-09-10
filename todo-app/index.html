@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة مهامي</title>
+    <title>قائمة مهام الفريق</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -26,6 +29,83 @@
             margin: 0 auto;
         }
 
+        /* Login Page Styles */
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 50px;
+        }
+
+        .login-card h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .login-card p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-msg {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        /* App Styles */
         .header {
             text-align: center;
             color: white;
@@ -33,7 +113,7 @@
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 5px;
         }
 
@@ -42,11 +122,41 @@
             font-size: 0.95rem;
         }
 
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .user-info span {
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
         .stats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
 
         .stat {
@@ -162,10 +272,19 @@
             opacity: 1;
         }
 
-        .task-text {
+        .task-content {
             flex: 1;
+        }
+
+        .task-text {
             font-size: 1rem;
             color: #333;
+        }
+
+        .task-owner {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 3px;
         }
 
         .delete-btn {
@@ -234,16 +353,63 @@
             box-shadow: none;
         }
 
+        /* Admin Tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .admin-tab:hover:not(.active) {
+            background: #e0e0e0;
+        }
+
+        .admin-badge {
+            background: #ff9800;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 15px;
             }
             
             .header h1 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             
-            .app-card {
+            .app-card, .login-card {
                 padding: 20px;
             }
             
@@ -254,139 +420,418 @@
             .input-section button {
                 padding: 15px;
             }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1>📋 قائمة مهامي</h1>
-            <p>نظم يومك وأنجز أكثر</p>
-            <div class="stats">
-                <span class="stat" id="total-stat">المجموع: 0</span>
-                <span class="stat" id="completed-stat">مكتمل: 0</span>
-                <span class="stat" id="pending-stat">متبقي: 0</span>
+        <!-- Login Page -->
+        <div id="login-page">
+            <div class="login-card">
+                <h1>📋 قائمة مهام الفريق</h1>
+                <p>سجّل دخولك للوصول لمهامك</p>
+                
+                <div class="error-msg" id="error-msg"></div>
+                
+                <div class="form-group">
+                    <label>اسم المستخدم</label>
+                    <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+                </div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور">
+                </div>
+                
+                <button class="login-btn" onclick="login()">دخول</button>
             </div>
-        </header>
+        </div>
 
-        <div class="app-card">
-            <div class="input-section">
-                <input type="text" id="task-input" placeholder="أضف مهمة جديدة..." autofocus>
-                <button onclick="addTask()" id="add-btn">+</button>
-            </div>
+        <!-- App Page -->
+        <div id="app-page" class="hidden">
+            <header class="header">
+                <h1>📋 قائمة مهام الفريق</h1>
+                <p id="welcome-msg">مرحباً!</p>
+                
+                <div class="user-info">
+                    <span id="user-display"></span>
+                    <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
+                </div>
 
-            <ul class="tasks-list" id="tasks-list">
-                <li class="empty-state" id="empty-state">
-                    <div class="icon">✨</div>
-                    <p>لا توجد مهام بعد</p>
-                    <p>أضف مهمتك الأولى!</p>
-                </li>
-            </ul>
+                <div class="stats">
+                    <span class="stat" id="total-stat">المجموع: 0</span>
+                    <span class="stat" id="completed-stat">مكتمل: 0</span>
+                    <span class="stat" id="pending-stat">متبقي: 0</span>
+                </div>
+            </header>
 
-            <div class="email-section">
-                <button class="email-btn" onclick="sendEmailReport()" id="email-btn" disabled>
-                    <span>📧</span>
-                    <span>إرسال تقرير بالإيميل</span>
-                </button>
+            <div class="app-card">
+                <!-- Admin Tabs -->
+                <div class="admin-tabs hidden" id="admin-tabs">
+                    <button class="admin-tab active" data-user="all">الكل</button>
+                </div>
+
+                <div class="input-section" id="input-section">
+                    <input type="text" id="task-input" placeholder="أضف مهمة جديدة...">
+                    <button onclick="addTask()">+</button>
+                </div>
+
+                <ul class="tasks-list" id="tasks-list">
+                    <li class="loading">جاري التحميل...</li>
+                </ul>
+
+                <div class="email-section">
+                    <button class="email-btn" onclick="sendEmailReport()" id="email-btn" disabled>
+                        <span>📧</span>
+                        <span>إرسال تقرير بالإيميل</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let tasks = [];
+        // Firebase Configuration - يجب تحديثها بإعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // المستخدمون - 3 موظفين + مدير
+        const USERS = {
+            'admin': { password: 'admin123', name: 'المدير', isAdmin: true },
+            'موظف1': { password: '1234', name: 'الموظف الأول', isAdmin: false },
+            'موظف2': { password: '1234', name: 'الموظف الثاني', isAdmin: false },
+            'موظف3': { password: '1234', name: 'الموظف الثالث', isAdmin: false }
+        };
+
+        let currentUser = null;
+        let tasks = {};
+        let selectedUserFilter = 'all';
+        let db = null;
+        let useFirebase = false;
 
         function init() {
-            const saved = localStorage.getItem('my-tasks');
-            if (saved) {
-                tasks = JSON.parse(saved);
-            }
-            renderTasks();
-            
-            document.getElementById('task-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    addTask();
+            // محاولة تهيئة Firebase
+            try {
+                if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    useFirebase = true;
                 }
+            } catch (e) {
+                console.log('Firebase not configured, using localStorage');
+            }
+
+            // التحقق من تسجيل الدخول المحفوظ
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser && USERS[savedUser]) {
+                currentUser = savedUser;
+                showApp();
+            }
+
+            // Enter key للدخول
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('username').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') document.getElementById('password').focus();
             });
         }
 
-        function saveTasks() {
-            localStorage.setItem('my-tasks', JSON.stringify(tasks));
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (!username || !password) {
+                errorMsg.textContent = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            if (!USERS[username]) {
+                errorMsg.textContent = 'اسم المستخدم غير موجود';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            if (USERS[username].password !== password) {
+                errorMsg.textContent = 'كلمة المرور غير صحيحة';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            currentUser = username;
+            localStorage.setItem('currentUser', username);
+            errorMsg.style.display = 'none';
+            showApp();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('app-page').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function showApp() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('app-page').classList.remove('hidden');
+
+            const user = USERS[currentUser];
+            document.getElementById('welcome-msg').textContent = `مرحباً ${user.name}!`;
+            
+            let userDisplay = user.name;
+            if (user.isAdmin) {
+                userDisplay = `<span class="admin-badge">مدير</span>${user.name}`;
+            }
+            document.getElementById('user-display').innerHTML = userDisplay;
+
+            // إظهار tabs للمدير
+            const adminTabs = document.getElementById('admin-tabs');
+            if (user.isAdmin) {
+                adminTabs.classList.remove('hidden');
+                setupAdminTabs();
+            } else {
+                adminTabs.classList.add('hidden');
+            }
+
+            // إخفاء حقل الإدخال إذا كان المدير يشاهد مهام الآخرين
+            document.getElementById('input-section').classList.remove('hidden');
+
+            loadTasks();
+
+            document.getElementById('task-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addTask();
+            });
+        }
+
+        function setupAdminTabs() {
+            const adminTabs = document.getElementById('admin-tabs');
+            adminTabs.innerHTML = '<button class="admin-tab active" data-user="all">الكل</button>';
+            
+            Object.keys(USERS).forEach(username => {
+                if (!USERS[username].isAdmin) {
+                    const btn = document.createElement('button');
+                    btn.className = 'admin-tab';
+                    btn.dataset.user = username;
+                    btn.textContent = USERS[username].name;
+                    adminTabs.appendChild(btn);
+                }
+            });
+
+            adminTabs.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    adminTabs.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedUserFilter = this.dataset.user;
+                    renderTasks();
+                });
+            });
+        }
+
+        async function loadTasks() {
+            if (useFirebase) {
+                try {
+                    const snapshot = await db.collection('tasks').get();
+                    tasks = {};
+                    snapshot.forEach(doc => {
+                        const task = doc.data();
+                        if (!tasks[task.owner]) tasks[task.owner] = [];
+                        tasks[task.owner].push({ ...task, id: doc.id });
+                    });
+                } catch (e) {
+                    console.error('Firebase error:', e);
+                    loadFromLocalStorage();
+                }
+            } else {
+                loadFromLocalStorage();
+            }
+            renderTasks();
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('team-tasks');
+            if (saved) {
+                tasks = JSON.parse(saved);
+            } else {
+                tasks = {};
+            }
+        }
+
+        async function saveTasks() {
+            localStorage.setItem('team-tasks', JSON.stringify(tasks));
             updateStats();
         }
 
         function updateStats() {
-            const total = tasks.length;
-            const completed = tasks.filter(t => t.completed).length;
+            let allTasks = [];
+            const user = USERS[currentUser];
+
+            if (user.isAdmin) {
+                if (selectedUserFilter === 'all') {
+                    Object.values(tasks).forEach(userTasks => {
+                        allTasks = allTasks.concat(userTasks);
+                    });
+                } else {
+                    allTasks = tasks[selectedUserFilter] || [];
+                }
+            } else {
+                allTasks = tasks[currentUser] || [];
+            }
+
+            const total = allTasks.length;
+            const completed = allTasks.filter(t => t.completed).length;
             const pending = total - completed;
-            
+
             document.getElementById('total-stat').textContent = `المجموع: ${total}`;
             document.getElementById('completed-stat').textContent = `مكتمل: ${completed}`;
             document.getElementById('pending-stat').textContent = `متبقي: ${pending}`;
-            
+
             document.getElementById('email-btn').disabled = total === 0;
         }
 
-        function addTask() {
+        async function addTask() {
             const input = document.getElementById('task-input');
             const text = input.value.trim();
-            
+
             if (!text) return;
-            
-            tasks.push({
-                id: Date.now(),
+
+            const task = {
+                id: Date.now().toString(),
                 text: text,
                 completed: false,
+                owner: currentUser,
+                ownerName: USERS[currentUser].name,
                 createdAt: new Date().toISOString()
-            });
-            
+            };
+
+            if (!tasks[currentUser]) tasks[currentUser] = [];
+            tasks[currentUser].push(task);
+
+            if (useFirebase) {
+                try {
+                    await db.collection('tasks').doc(task.id).set(task);
+                } catch (e) {
+                    console.error('Firebase error:', e);
+                }
+            }
+
             input.value = '';
             saveTasks();
             renderTasks();
             input.focus();
         }
 
-        function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
+        async function toggleTask(id, owner) {
+            const userTasks = tasks[owner];
+            if (!userTasks) return;
+
+            const task = userTasks.find(t => t.id === id);
             if (task) {
                 task.completed = !task.completed;
+
+                if (useFirebase) {
+                    try {
+                        await db.collection('tasks').doc(id).update({ completed: task.completed });
+                    } catch (e) {
+                        console.error('Firebase error:', e);
+                    }
+                }
+
                 saveTasks();
                 renderTasks();
             }
         }
 
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
+        async function deleteTask(id, owner) {
+            if (!tasks[owner]) return;
+
+            tasks[owner] = tasks[owner].filter(t => t.id !== id);
+
+            if (useFirebase) {
+                try {
+                    await db.collection('tasks').doc(id).delete();
+                } catch (e) {
+                    console.error('Firebase error:', e);
+                }
+            }
+
             saveTasks();
             renderTasks();
         }
 
         function renderTasks() {
             const list = document.getElementById('tasks-list');
-            const emptyState = document.getElementById('empty-state');
-            
+            const user = USERS[currentUser];
+            let tasksToShow = [];
+
+            if (user.isAdmin) {
+                if (selectedUserFilter === 'all') {
+                    Object.keys(tasks).forEach(owner => {
+                        tasks[owner].forEach(task => {
+                            tasksToShow.push({ ...task, owner });
+                        });
+                    });
+                } else {
+                    tasksToShow = (tasks[selectedUserFilter] || []).map(t => ({ ...t, owner: selectedUserFilter }));
+                }
+                // إظهار/إخفاء حقل الإدخال للمدير
+                document.getElementById('input-section').classList.add('hidden');
+            } else {
+                tasksToShow = (tasks[currentUser] || []).map(t => ({ ...t, owner: currentUser }));
+                document.getElementById('input-section').classList.remove('hidden');
+            }
+
+            // ترتيب حسب التاريخ
+            tasksToShow.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
             list.innerHTML = '';
-            
-            if (tasks.length === 0) {
+
+            if (tasksToShow.length === 0) {
                 list.innerHTML = `
                     <li class="empty-state">
                         <div class="icon">✨</div>
                         <p>لا توجد مهام بعد</p>
-                        <p>أضف مهمتك الأولى!</p>
+                        <p>${user.isAdmin ? 'لم يضف الموظفون أي مهام' : 'أضف مهمتك الأولى!'}</p>
                     </li>
                 `;
             } else {
-                tasks.forEach(task => {
+                tasksToShow.forEach(task => {
                     const li = document.createElement('li');
                     li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    
+                    const ownerDisplay = user.isAdmin && selectedUserFilter === 'all' 
+                        ? `<div class="task-owner">${task.ownerName || USERS[task.owner]?.name || task.owner}</div>` 
+                        : '';
+
+                    const canDelete = !user.isAdmin || task.owner === currentUser;
+
                     li.innerHTML = `
-                        <div class="task-checkbox" onclick="toggleTask(${task.id})"></div>
-                        <span class="task-text">${escapeHtml(task.text)}</span>
-                        <button class="delete-btn" onclick="deleteTask(${task.id})">×</button>
+                        <div class="task-checkbox" onclick="toggleTask('${task.id}', '${task.owner}')"></div>
+                        <div class="task-content">
+                            <span class="task-text">${escapeHtml(task.text)}</span>
+                            ${ownerDisplay}
+                        </div>
+                        ${canDelete ? `<button class="delete-btn" onclick="deleteTask('${task.id}', '${task.owner}')">×</button>` : ''}
                     `;
                     list.appendChild(li);
                 });
             }
-            
+
             updateStats();
         }
 
@@ -397,44 +842,75 @@
         }
 
         function sendEmailReport() {
-            const total = tasks.length;
-            const completed = tasks.filter(t => t.completed).length;
+            const user = USERS[currentUser];
+            let tasksToReport = [];
+
+            if (user.isAdmin) {
+                if (selectedUserFilter === 'all') {
+                    Object.keys(tasks).forEach(owner => {
+                        tasks[owner].forEach(task => {
+                            tasksToReport.push({ ...task, owner });
+                        });
+                    });
+                } else {
+                    tasksToReport = (tasks[selectedUserFilter] || []).map(t => ({ ...t, owner: selectedUserFilter }));
+                }
+            } else {
+                tasksToReport = (tasks[currentUser] || []).map(t => ({ ...t, owner: currentUser }));
+            }
+
+            const total = tasksToReport.length;
+            const completed = tasksToReport.filter(t => t.completed).length;
             const pending = total - completed;
-            
+
             const today = new Date().toLocaleDateString('ar-SA', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
-            
-            let report = `تقرير مهامي - ${today}\n`;
+
+            let report = `تقرير مهام الفريق - ${today}\n`;
             report += `═══════════════════════════\n\n`;
             report += `📊 الإحصائيات:\n`;
             report += `• المجموع: ${total} مهام\n`;
             report += `• المكتمل: ${completed} ✓\n`;
             report += `• المتبقي: ${pending}\n\n`;
-            
-            if (completed > 0) {
-                report += `✅ المهام المكتملة:\n`;
-                tasks.filter(t => t.completed).forEach(t => {
-                    report += `  ✓ ${t.text}\n`;
+
+            if (user.isAdmin && selectedUserFilter === 'all') {
+                // تقرير مفصل لكل موظف
+                Object.keys(tasks).forEach(owner => {
+                    const ownerTasks = tasks[owner];
+                    if (ownerTasks && ownerTasks.length > 0) {
+                        const ownerName = USERS[owner]?.name || owner;
+                        report += `\n👤 ${ownerName}:\n`;
+                        ownerTasks.forEach(t => {
+                            report += `  ${t.completed ? '✓' : '☐'} ${t.text}\n`;
+                        });
+                    }
                 });
-                report += `\n`;
+            } else {
+                if (completed > 0) {
+                    report += `✅ المهام المكتملة:\n`;
+                    tasksToReport.filter(t => t.completed).forEach(t => {
+                        report += `  ✓ ${t.text}\n`;
+                    });
+                    report += `\n`;
+                }
+
+                if (pending > 0) {
+                    report += `⏳ المهام المتبقية:\n`;
+                    tasksToReport.filter(t => !t.completed).forEach(t => {
+                        report += `  ☐ ${t.text}\n`;
+                    });
+                }
             }
-            
-            if (pending > 0) {
-                report += `⏳ المهام المتبقية:\n`;
-                tasks.filter(t => !t.completed).forEach(t => {
-                    report += `  ☐ ${t.text}\n`;
-                });
-            }
-            
+
             report += `\n═══════════════════════════\n`;
-            report += `تم إنشاء هذا التقرير بواسطة تطبيق قائمة مهامي`;
-            
-            const subject = encodeURIComponent(`تقرير مهامي - ${today}`);
+            report += `تم إنشاء هذا التقرير بواسطة تطبيق قائمة مهام الفريق`;
+
+            const subject = encodeURIComponent(`تقرير مهام الفريق - ${today}`);
             const body = encodeURIComponent(report);
-            
+
             window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
