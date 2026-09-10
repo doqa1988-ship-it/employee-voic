@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         * {
@@ -29,7 +28,6 @@
             margin: 0 auto;
         }
 
-        /* Login Page Styles */
         .login-card {
             background: white;
             border-radius: 20px;
@@ -62,7 +60,7 @@
             font-weight: 600;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -70,9 +68,10 @@
             font-size: 1rem;
             font-family: 'Cairo', sans-serif;
             transition: border-color 0.3s;
+            background: white;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -105,7 +104,15 @@
             display: none;
         }
 
-        /* App Styles */
+        .success-msg {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         .header {
             text-align: center;
             color: white;
@@ -171,6 +178,37 @@
             border-radius: 20px;
             padding: 25px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .sync-status {
+            text-align: center;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .sync-status.online {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .sync-status.offline {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .sync-status.syncing {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 5px;
         }
 
         .input-section {
@@ -287,6 +325,11 @@
             margin-top: 3px;
         }
 
+        .task-time {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
         .delete-btn {
             width: 32px;
             height: 32px;
@@ -353,7 +396,6 @@
             box-shadow: none;
         }
 
-        /* Admin Tabs */
         .admin-tabs {
             display: flex;
             gap: 10px;
@@ -426,6 +468,10 @@
                 gap: 10px;
                 text-align: center;
             }
+
+            .admin-tabs {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -440,8 +486,14 @@
                 <div class="error-msg" id="error-msg"></div>
                 
                 <div class="form-group">
-                    <label>اسم المستخدم</label>
-                    <input type="text" id="username" placeholder="أدخل اسم المستخدم">
+                    <label>اختر المستخدم</label>
+                    <select id="username">
+                        <option value="">-- اختر --</option>
+                        <option value="admin">المدير (Admin)</option>
+                        <option value="موظف1">الموظف الأول</option>
+                        <option value="موظف2">الموظف الثاني</option>
+                        <option value="موظف3">الموظف الثالث</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -450,6 +502,12 @@
                 </div>
                 
                 <button class="login-btn" onclick="login()">دخول</button>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 10px; font-size: 0.85rem;">
+                    <strong>كلمات المرور:</strong><br>
+                    المدير: <code>admin123</code><br>
+                    الموظفين: <code>1234</code>
+                </div>
             </div>
         </div>
 
@@ -472,6 +530,11 @@
             </header>
 
             <div class="app-card">
+                <div class="sync-status online" id="sync-status">
+                    <button class="refresh-btn" onclick="loadTasks()">🔄</button>
+                    <span id="sync-text">متصل - البيانات محدثة</span>
+                </div>
+
                 <!-- Admin Tabs -->
                 <div class="admin-tabs hidden" id="admin-tabs">
                     <button class="admin-tab active" data-user="all">الكل</button>
@@ -497,17 +560,17 @@
     </div>
 
     <script>
-        // Firebase Configuration - يجب تحديثها بإعدادات Firebase الخاصة بك
+        // Firebase Configuration - مشروع تجريبي
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBnQPazC6jmFLl5dnjMNkKfyw2Bz0rJFJI",
+            authDomain: "team-todo-demo-app.firebaseapp.com",
+            projectId: "team-todo-demo-app",
+            storageBucket: "team-todo-demo-app.firebasestorage.app",
+            messagingSenderId: "574621231873",
+            appId: "1:574621231873:web:5a7e75c0f69f5c1d8b3e2a"
         };
 
-        // المستخدمون - 3 موظفين + مدير
+        // المستخدمون
         const USERS = {
             'admin': { password: 'admin123', name: 'المدير', isAdmin: true },
             'موظف1': { password: '1234', name: 'الموظف الأول', isAdmin: false },
@@ -516,52 +579,51 @@
         };
 
         let currentUser = null;
-        let tasks = {};
+        let allTasks = [];
         let selectedUserFilter = 'all';
         let db = null;
-        let useFirebase = false;
+        let unsubscribe = null;
+
+        // تهيئة Firebase
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                console.log('Firebase initialized');
+                return true;
+            } catch (e) {
+                console.error('Firebase init error:', e);
+                return false;
+            }
+        }
 
         function init() {
-            // محاولة تهيئة Firebase
-            try {
-                if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-                    firebase.initializeApp(firebaseConfig);
-                    db = firebase.firestore();
-                    useFirebase = true;
-                }
-            } catch (e) {
-                console.log('Firebase not configured, using localStorage');
-            }
-
-            // التحقق من تسجيل الدخول المحفوظ
+            const firebaseReady = initFirebase();
+            
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser && USERS[savedUser]) {
                 currentUser = savedUser;
                 showApp();
             }
 
-            // Enter key للدخول
             document.getElementById('password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') login();
-            });
-            document.getElementById('username').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') document.getElementById('password').focus();
             });
         }
 
         function login() {
-            const username = document.getElementById('username').value.trim();
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('error-msg');
 
-            if (!username || !password) {
-                errorMsg.textContent = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+            if (!username) {
+                errorMsg.textContent = 'الرجاء اختيار المستخدم';
                 errorMsg.style.display = 'block';
                 return;
             }
 
-            if (!USERS[username]) {
-                errorMsg.textContent = 'اسم المستخدم غير موجود';
+            if (!password) {
+                errorMsg.textContent = 'الرجاء إدخال كلمة المرور';
                 errorMsg.style.display = 'block';
                 return;
             }
@@ -579,6 +641,10 @@
         }
 
         function logout() {
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
             currentUser = null;
             localStorage.removeItem('currentUser');
             document.getElementById('login-page').classList.remove('hidden');
@@ -600,19 +666,17 @@
             }
             document.getElementById('user-display').innerHTML = userDisplay;
 
-            // إظهار tabs للمدير
             const adminTabs = document.getElementById('admin-tabs');
             if (user.isAdmin) {
                 adminTabs.classList.remove('hidden');
                 setupAdminTabs();
+                document.getElementById('input-section').classList.add('hidden');
             } else {
                 adminTabs.classList.add('hidden');
+                document.getElementById('input-section').classList.remove('hidden');
             }
 
-            // إخفاء حقل الإدخال إذا كان المدير يشاهد مهام الآخرين
-            document.getElementById('input-section').classList.remove('hidden');
-
-            loadTasks();
+            setupRealtimeListener();
 
             document.getElementById('task-input').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') addTask();
@@ -643,65 +707,62 @@
             });
         }
 
-        async function loadTasks() {
-            if (useFirebase) {
-                try {
-                    const snapshot = await db.collection('tasks').get();
-                    tasks = {};
-                    snapshot.forEach(doc => {
-                        const task = doc.data();
-                        if (!tasks[task.owner]) tasks[task.owner] = [];
-                        tasks[task.owner].push({ ...task, id: doc.id });
-                    });
-                } catch (e) {
-                    console.error('Firebase error:', e);
-                    loadFromLocalStorage();
-                }
+        function updateSyncStatus(status, text) {
+            const statusEl = document.getElementById('sync-status');
+            const textEl = document.getElementById('sync-text');
+            statusEl.className = 'sync-status ' + status;
+            textEl.textContent = text;
+        }
+
+        function setupRealtimeListener() {
+            if (!db) {
+                loadTasksFromLocalStorage();
+                return;
+            }
+
+            updateSyncStatus('syncing', 'جاري المزامنة...');
+
+            if (unsubscribe) {
+                unsubscribe();
+            }
+
+            unsubscribe = db.collection('tasks')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(
+                    (snapshot) => {
+                        allTasks = [];
+                        snapshot.forEach(doc => {
+                            allTasks.push({ id: doc.id, ...doc.data() });
+                        });
+                        renderTasks();
+                        updateSyncStatus('online', 'متصل - البيانات محدثة');
+                    },
+                    (error) => {
+                        console.error('Firestore error:', error);
+                        updateSyncStatus('offline', 'غير متصل - استخدام البيانات المحلية');
+                        loadTasksFromLocalStorage();
+                    }
+                );
+        }
+
+        function loadTasks() {
+            if (db) {
+                setupRealtimeListener();
             } else {
-                loadFromLocalStorage();
+                loadTasksFromLocalStorage();
+            }
+        }
+
+        function loadTasksFromLocalStorage() {
+            const saved = localStorage.getItem('team-tasks-v2');
+            if (saved) {
+                allTasks = JSON.parse(saved);
             }
             renderTasks();
         }
 
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('team-tasks');
-            if (saved) {
-                tasks = JSON.parse(saved);
-            } else {
-                tasks = {};
-            }
-        }
-
-        async function saveTasks() {
-            localStorage.setItem('team-tasks', JSON.stringify(tasks));
-            updateStats();
-        }
-
-        function updateStats() {
-            let allTasks = [];
-            const user = USERS[currentUser];
-
-            if (user.isAdmin) {
-                if (selectedUserFilter === 'all') {
-                    Object.values(tasks).forEach(userTasks => {
-                        allTasks = allTasks.concat(userTasks);
-                    });
-                } else {
-                    allTasks = tasks[selectedUserFilter] || [];
-                }
-            } else {
-                allTasks = tasks[currentUser] || [];
-            }
-
-            const total = allTasks.length;
-            const completed = allTasks.filter(t => t.completed).length;
-            const pending = total - completed;
-
-            document.getElementById('total-stat').textContent = `المجموع: ${total}`;
-            document.getElementById('completed-stat').textContent = `مكتمل: ${completed}`;
-            document.getElementById('pending-stat').textContent = `متبقي: ${pending}`;
-
-            document.getElementById('email-btn').disabled = total === 0;
+        function saveToLocalStorage() {
+            localStorage.setItem('team-tasks-v2', JSON.stringify(allTasks));
         }
 
         async function addTask() {
@@ -711,67 +772,74 @@
             if (!text) return;
 
             const task = {
-                id: Date.now().toString(),
                 text: text,
                 completed: false,
                 owner: currentUser,
                 ownerName: USERS[currentUser].name,
-                createdAt: new Date().toISOString()
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAtLocal: new Date().toISOString()
             };
 
-            if (!tasks[currentUser]) tasks[currentUser] = [];
-            tasks[currentUser].push(task);
-
-            if (useFirebase) {
-                try {
-                    await db.collection('tasks').doc(task.id).set(task);
-                } catch (e) {
-                    console.error('Firebase error:', e);
-                }
-            }
-
             input.value = '';
-            saveTasks();
-            renderTasks();
             input.focus();
-        }
 
-        async function toggleTask(id, owner) {
-            const userTasks = tasks[owner];
-            if (!userTasks) return;
-
-            const task = userTasks.find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
-
-                if (useFirebase) {
-                    try {
-                        await db.collection('tasks').doc(id).update({ completed: task.completed });
-                    } catch (e) {
-                        console.error('Firebase error:', e);
-                    }
+            if (db) {
+                try {
+                    await db.collection('tasks').add(task);
+                } catch (e) {
+                    console.error('Error adding task:', e);
+                    task.id = Date.now().toString();
+                    task.createdAt = new Date();
+                    allTasks.unshift(task);
+                    saveToLocalStorage();
+                    renderTasks();
                 }
-
-                saveTasks();
+            } else {
+                task.id = Date.now().toString();
+                task.createdAt = new Date();
+                allTasks.unshift(task);
+                saveToLocalStorage();
                 renderTasks();
             }
         }
 
-        async function deleteTask(id, owner) {
-            if (!tasks[owner]) return;
+        async function toggleTask(id) {
+            const task = allTasks.find(t => t.id === id);
+            if (!task) return;
 
-            tasks[owner] = tasks[owner].filter(t => t.id !== id);
+            const newStatus = !task.completed;
 
-            if (useFirebase) {
+            if (db) {
+                try {
+                    await db.collection('tasks').doc(id).update({ completed: newStatus });
+                } catch (e) {
+                    console.error('Error toggling task:', e);
+                    task.completed = newStatus;
+                    saveToLocalStorage();
+                    renderTasks();
+                }
+            } else {
+                task.completed = newStatus;
+                saveToLocalStorage();
+                renderTasks();
+            }
+        }
+
+        async function deleteTask(id) {
+            if (db) {
                 try {
                     await db.collection('tasks').doc(id).delete();
                 } catch (e) {
-                    console.error('Firebase error:', e);
+                    console.error('Error deleting task:', e);
+                    allTasks = allTasks.filter(t => t.id !== id);
+                    saveToLocalStorage();
+                    renderTasks();
                 }
+            } else {
+                allTasks = allTasks.filter(t => t.id !== id);
+                saveToLocalStorage();
+                renderTasks();
             }
-
-            saveTasks();
-            renderTasks();
         }
 
         function renderTasks() {
@@ -781,23 +849,13 @@
 
             if (user.isAdmin) {
                 if (selectedUserFilter === 'all') {
-                    Object.keys(tasks).forEach(owner => {
-                        tasks[owner].forEach(task => {
-                            tasksToShow.push({ ...task, owner });
-                        });
-                    });
+                    tasksToShow = [...allTasks];
                 } else {
-                    tasksToShow = (tasks[selectedUserFilter] || []).map(t => ({ ...t, owner: selectedUserFilter }));
+                    tasksToShow = allTasks.filter(t => t.owner === selectedUserFilter);
                 }
-                // إظهار/إخفاء حقل الإدخال للمدير
-                document.getElementById('input-section').classList.add('hidden');
             } else {
-                tasksToShow = (tasks[currentUser] || []).map(t => ({ ...t, owner: currentUser }));
-                document.getElementById('input-section').classList.remove('hidden');
+                tasksToShow = allTasks.filter(t => t.owner === currentUser);
             }
-
-            // ترتيب حسب التاريخ
-            tasksToShow.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
             list.innerHTML = '';
 
@@ -814,25 +872,46 @@
                     const li = document.createElement('li');
                     li.className = `task-item ${task.completed ? 'completed' : ''}`;
                     
-                    const ownerDisplay = user.isAdmin && selectedUserFilter === 'all' 
+                    const showOwner = user.isAdmin && selectedUserFilter === 'all';
+                    const ownerDisplay = showOwner 
                         ? `<div class="task-owner">${task.ownerName || USERS[task.owner]?.name || task.owner}</div>` 
                         : '';
 
-                    const canDelete = !user.isAdmin || task.owner === currentUser;
+                    const canDelete = task.owner === currentUser;
+                    const canToggle = task.owner === currentUser || user.isAdmin;
+
+                    const timeStr = task.createdAt?.toDate ? 
+                        task.createdAt.toDate().toLocaleString('ar-SA') : 
+                        (task.createdAtLocal ? new Date(task.createdAtLocal).toLocaleString('ar-SA') : '');
 
                     li.innerHTML = `
-                        <div class="task-checkbox" onclick="toggleTask('${task.id}', '${task.owner}')"></div>
+                        <div class="task-checkbox ${canToggle ? '' : 'disabled'}" 
+                             onclick="${canToggle ? `toggleTask('${task.id}')` : ''}"
+                             style="${canToggle ? '' : 'cursor: default; opacity: 0.5;'}"></div>
                         <div class="task-content">
                             <span class="task-text">${escapeHtml(task.text)}</span>
                             ${ownerDisplay}
+                            <div class="task-time">${timeStr}</div>
                         </div>
-                        ${canDelete ? `<button class="delete-btn" onclick="deleteTask('${task.id}', '${task.owner}')">×</button>` : ''}
+                        ${canDelete ? `<button class="delete-btn" onclick="deleteTask('${task.id}')">×</button>` : ''}
                     `;
                     list.appendChild(li);
                 });
             }
 
-            updateStats();
+            updateStats(tasksToShow);
+        }
+
+        function updateStats(tasksToShow) {
+            const total = tasksToShow.length;
+            const completed = tasksToShow.filter(t => t.completed).length;
+            const pending = total - completed;
+
+            document.getElementById('total-stat').textContent = `المجموع: ${total}`;
+            document.getElementById('completed-stat').textContent = `مكتمل: ${completed}`;
+            document.getElementById('pending-stat').textContent = `متبقي: ${pending}`;
+
+            document.getElementById('email-btn').disabled = total === 0;
         }
 
         function escapeHtml(text) {
@@ -847,16 +926,12 @@
 
             if (user.isAdmin) {
                 if (selectedUserFilter === 'all') {
-                    Object.keys(tasks).forEach(owner => {
-                        tasks[owner].forEach(task => {
-                            tasksToReport.push({ ...task, owner });
-                        });
-                    });
+                    tasksToReport = [...allTasks];
                 } else {
-                    tasksToReport = (tasks[selectedUserFilter] || []).map(t => ({ ...t, owner: selectedUserFilter }));
+                    tasksToReport = allTasks.filter(t => t.owner === selectedUserFilter);
                 }
             } else {
-                tasksToReport = (tasks[currentUser] || []).map(t => ({ ...t, owner: currentUser }));
+                tasksToReport = allTasks.filter(t => t.owner === currentUser);
             }
 
             const total = tasksToReport.length;
@@ -877,16 +952,19 @@
             report += `• المتبقي: ${pending}\n\n`;
 
             if (user.isAdmin && selectedUserFilter === 'all') {
-                // تقرير مفصل لكل موظف
-                Object.keys(tasks).forEach(owner => {
-                    const ownerTasks = tasks[owner];
-                    if (ownerTasks && ownerTasks.length > 0) {
-                        const ownerName = USERS[owner]?.name || owner;
-                        report += `\n👤 ${ownerName}:\n`;
-                        ownerTasks.forEach(t => {
-                            report += `  ${t.completed ? '✓' : '☐'} ${t.text}\n`;
-                        });
-                    }
+                const byOwner = {};
+                tasksToReport.forEach(t => {
+                    if (!byOwner[t.owner]) byOwner[t.owner] = [];
+                    byOwner[t.owner].push(t);
+                });
+
+                Object.keys(byOwner).forEach(owner => {
+                    const ownerTasks = byOwner[owner];
+                    const ownerName = USERS[owner]?.name || owner;
+                    report += `\n👤 ${ownerName}:\n`;
+                    ownerTasks.forEach(t => {
+                        report += `  ${t.completed ? '✓' : '☐'} ${t.text}\n`;
+                    });
                 });
             } else {
                 if (completed > 0) {
