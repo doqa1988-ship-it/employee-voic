@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Node modules
+node_modules
+server/node_modules
+
+# البيانات المحلية
+server/data
+data
+uploads
+
+# ملفات البيئة
+.env
+*.env.local
+
+# ملفات التطوير
+*.md
+*.log
+.DS_Store
+Thumbs.db
+
+# ملفات IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# ملفات قديمة
+todo-app

@@ -17,3 +17,20 @@ npm-debug.log*
 *.temp
 *.swp
 *~
+
+# Node modules
+node_modules/
+server/node_modules/
+
+# بيانات قاعدة البيانات
+server/data/
+data/
+
+# المرفقات المرفوعة
+uploads/
+server/uploads/
+
+# ملفات البيئة
+.env
+*.env.local
+.env.production
