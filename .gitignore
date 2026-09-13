@@ -33,4 +33,6 @@ server/uploads/
 # ملفات البيئة
 .env
 *.env.local
-.env.production
+
+# ملفات مضغوطة
+*.zip
