@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مساعد دقة الصوتي</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- الشريط العلوي -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-title">
+          <span class="logo">🎙️</span>
+          <h1>مساعد دقة الصوتي</h1>
+          <span id="appMode" class="mode-badge"></span>
+        </div>
+        <div class="header-actions">
+          <span id="userInfo" class="user-info"></span>
+          <button id="logoutBtn" class="btn btn-small btn-outline">خروج</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+      <!-- التنقل -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="call">📞 إجراء مكالمة</button>
+        <button class="tab" data-tab="contacts">👥 جهات الاتصال</button>
+        <button class="tab" data-tab="history">📋 سجل المكالمات</button>
+        <button class="tab" data-tab="audit">🔍 سجل التدقيق</button>
+      </nav>
+
+      <!-- قسم إجراء مكالمة -->
+      <section id="callSection" class="section active">
+        <div class="card">
+          <h2>📞 إجراء مكالمة جديدة</h2>
+          <p class="section-desc">اختر جهة اتصال واكتب المهمة التي تريد من المساعد تنفيذها</p>
+          
+          <form id="callForm" class="call-form">
+            <div class="form-group">
+              <label for="contactSelect">جهة الاتصال</label>
+              <select id="contactSelect" required>
+                <option value="">-- اختر جهة اتصال --</option>
+              </select>
+              <small id="contactStatus" class="form-hint"></small>
+            </div>
+            
+            <div class="form-group">
+              <label for="taskInput">المهمة المطلوبة</label>
+              <textarea 
+                id="taskInput" 
+                rows="3" 
+                required
+                minlength="10"
+                placeholder="مثال: اسأله وين وصلت المعاملة، وإذا يحتاج شي ثاني"
+              ></textarea>
+              <small class="form-hint">اكتب ما تريد من المساعد أن يفعله أثناء المكالمة</small>
+            </div>
+            
+            <div id="costEstimate" class="cost-estimate hidden">
+              <h4>💰 تقدير التكلفة</h4>
+              <div class="cost-details"></div>
+            </div>
+            
+            <div id="callError" class="error-message hidden"></div>
+            
+            <div class="form-actions">
+              <button type="button" id="estimateBtn" class="btn btn-outline">
+                حساب التكلفة
+              </button>
+              <button type="submit" id="callBtn" class="btn btn-primary">
+                <span class="btn-text">📞 بدء المكالمة</span>
+                <span class="btn-loading hidden">جارٍ الاتصال...</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- المكالمة الجارية -->
+        <div id="activeCall" class="card active-call hidden">
+          <h3>🔴 مكالمة جارية</h3>
+          <div class="call-info">
+            <p><strong>الاتصال بـ:</strong> <span id="activeCallContact"></span></p>
+            <p><strong>المهمة:</strong> <span id="activeCallTask"></span></p>
+            <p><strong>الحالة:</strong> <span id="activeCallStatus"></span></p>
+            <p><strong>المدة:</strong> <span id="activeCallDuration">00:00</span></p>
+          </div>
+          <button id="endCallBtn" class="btn btn-danger">
+            ⏹️ إنهاء المكالمة
+          </button>
+        </div>
+      </section>
+
+      <!-- قسم جهات الاتصال -->
+      <section id="contactsSection" class="section hidden">
+        <div class="card">
+          <div class="section-header">
+            <h2>👥 جهات الاتصال</h2>
+            <button id="addContactBtn" class="btn btn-primary btn-small">+ إضافة جهة اتصال</button>
+          </div>
+          
+          <div id="contactsList" class="contacts-list">
+            <p class="loading">جارٍ التحميل...</p>
+          </div>
+        </div>
+
+        <!-- نموذج إضافة جهة اتصال -->
+        <div id="contactModal" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="contactModalTitle">إضافة جهة اتصال</h3>
+              <button class="modal-close" onclick="closeContactModal()">×</button>
+            </div>
+            <form id="contactForm">
+              <input type="hidden" id="contactId">
+              <div class="form-group">
+                <label for="contactName">الاسم</label>
+                <input type="text" id="contactName" required placeholder="مثال: علي محمد">
+              </div>
+              <div class="form-group">
+                <label for="contactPhone">رقم الهاتف</label>
+                <input type="tel" id="contactPhone" required placeholder="+964XXXXXXXXXX" dir="ltr">
+                <small class="form-hint">يجب أن يبدأ بـ +964 (العراق)</small>
+              </div>
+              <div id="contactFormError" class="error-message hidden"></div>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeContactModal()">إلغاء</button>
+                <button type="submit" class="btn btn-primary">حفظ</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- قسم سجل المكالمات -->
+      <section id="historySection" class="section hidden">
+        <div class="card">
+          <h2>📋 سجل المكالمات</h2>
+          <div id="callsList" class="calls-list">
+            <p class="loading">جارٍ التحميل...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- قسم سجل التدقيق -->
+      <section id="auditSection" class="section hidden">
+        <div class="card">
+          <h2>🔍 سجل التدقيق</h2>
+          <p class="section-desc">سجل جميع العمليات والأحداث في النظام</p>
+          <div id="auditList" class="audit-list">
+            <p class="loading">جارٍ التحميل...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- الذيل -->
+    <footer class="footer">
+      <p>مساعد دقة الصوتي - مساعد ذكاء اصطناعي للمكالمات الهاتفية</p>
+    </footer>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
