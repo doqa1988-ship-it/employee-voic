@@ -1,0 +1,742 @@
+/* ===== المتغيرات ===== */
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-light: #3b82f6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+/* ===== الأساسيات ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  background: var(--gray-100);
+  color: var(--gray-800);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ===== صفحة تسجيل الدخول ===== */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 1rem;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header .logo {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-header h1 {
+  font-size: 1.5rem;
+  color: var(--gray-900);
+  margin-bottom: 0.25rem;
+}
+
+.login-header p {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+  color: var(--gray-500);
+  font-size: 0.85rem;
+}
+
+/* ===== التطبيق الرئيسي ===== */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== الشريط العلوي ===== */
+.header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0.75rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-title .logo {
+  font-size: 1.5rem;
+}
+
+.header-title h1 {
+  font-size: 1.25rem;
+  color: var(--gray-900);
+}
+
+.mode-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.mode-badge.demo {
+  background: var(--warning);
+  color: white;
+}
+
+.mode-badge.live {
+  background: var(--success);
+  color: white;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-info {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+/* ===== المحتوى الرئيسي ===== */
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  width: 100%;
+}
+
+/* ===== التنقل (التابات) ===== */
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  background: white;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 0.6rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  border-radius: var(--radius);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: var(--gray-100);
+  color: var(--gray-800);
+}
+
+.tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ===== الأقسام ===== */
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+}
+
+/* ===== البطاقات ===== */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--gray-900);
+}
+
+/* ===== النماذج ===== */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  color: var(--gray-700);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* ===== الأزرار ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-outline {
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: var(--gray-50);
+  border-color: var(--gray-400);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-small {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-loading.hidden,
+.btn-text.hidden {
+  display: none;
+}
+
+/* ===== رسائل الخطأ والنجاح ===== */
+.error-message {
+  background: #fef2f2;
+  color: var(--danger);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid #fecaca;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.success-message {
+  background: #ecfdf5;
+  color: var(--success);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid #a7f3d0;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== تقدير التكلفة ===== */
+.cost-estimate {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.cost-estimate h4 {
+  margin-bottom: 0.75rem;
+  color: var(--gray-700);
+}
+
+.cost-details {
+  display: grid;
+  gap: 0.375rem;
+  font-size: 0.9rem;
+}
+
+.cost-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cost-row.total {
+  border-top: 1px solid var(--gray-300);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.cost-note {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-top: 0.5rem;
+}
+
+/* ===== المكالمة الجارية ===== */
+.active-call {
+  border: 2px solid var(--danger);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { border-color: var(--danger); }
+  50% { border-color: #fca5a5; }
+}
+
+.active-call h3 {
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.call-info {
+  margin-bottom: 1rem;
+}
+
+.call-info p {
+  margin-bottom: 0.375rem;
+}
+
+/* ===== قائمة جهات الاتصال ===== */
+.contacts-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.contact-name {
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
+.contact-phone {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  direction: ltr;
+  display: inline-block;
+}
+
+.contact-status {
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.contact-status.consent {
+  color: var(--success);
+}
+
+.contact-status.no-consent {
+  color: var(--warning);
+}
+
+.contact-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+/* ===== قائمة المكالمات ===== */
+.calls-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.call-item {
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  border-right: 4px solid var(--gray-300);
+}
+
+.call-item.completed { border-right-color: var(--success); }
+.call-item.failed { border-right-color: var(--danger); }
+.call-item.in-progress { border-right-color: var(--primary); }
+.call-item.demo_completed { border-right-color: var(--warning); }
+
+.call-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.call-contact {
+  font-weight: 500;
+}
+
+.call-time {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.call-task {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.call-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  flex-wrap: wrap;
+}
+
+.call-summary {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--gray-200);
+  font-size: 0.9rem;
+}
+
+/* ===== حالات المكالمة ===== */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-badge.pending { background: var(--gray-200); color: var(--gray-700); }
+.status-badge.initiated,
+.status-badge.ringing { background: #dbeafe; color: var(--primary); }
+.status-badge.in-progress { background: #dbeafe; color: var(--primary); }
+.status-badge.completed { background: #d1fae5; color: #059669; }
+.status-badge.failed,
+.status-badge.busy,
+.status-badge.no-answer { background: #fee2e2; color: var(--danger); }
+.status-badge.demo_initiated,
+.status-badge.demo_ringing,
+.status-badge.demo_in_progress { background: #fef3c7; color: #d97706; }
+.status-badge.demo_completed { background: #fef3c7; color: #d97706; }
+
+/* ===== سجل التدقيق ===== */
+.audit-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.audit-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.audit-time {
+  color: var(--gray-500);
+  white-space: nowrap;
+}
+
+.audit-user {
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.audit-action {
+  color: var(--gray-700);
+  flex: 1;
+}
+
+/* ===== المودال ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gray-500);
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--gray-700);
+}
+
+.modal form {
+  padding: 1.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* ===== التحميل ===== */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray-500);
+}
+
+/* ===== الرسائل الفارغة ===== */
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray-500);
+}
+
+/* ===== الذيل ===== */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  color: var(--gray-500);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--gray-200);
+  background: white;
+}
+
+/* ===== التجاوب ===== */
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tabs {
+    width: 100%;
+  }
+  
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .contact-actions {
+    width: 100%;
+  }
+  
+  .contact-actions .btn {
+    flex: 1;
+  }
+}

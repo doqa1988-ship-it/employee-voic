@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - مساعد دقة الصوتي</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo">🎙️</div>
+        <h1>مساعد دقة الصوتي</h1>
+        <p>مساعد ذكاء اصطناعي للمكالمات الهاتفية</p>
+      </div>
+      
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="username">اسم المستخدم</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            autocomplete="username"
+            placeholder="أدخل اسم المستخدم"
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            autocomplete="current-password"
+            placeholder="أدخل كلمة المرور"
+          >
+        </div>
+        
+        <div id="loginError" class="error-message hidden"></div>
+        
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+          <span class="btn-text">تسجيل الدخول</span>
+          <span class="btn-loading hidden">جارٍ التحقق...</span>
+        </button>
+      </form>
+      
+      <div class="login-footer">
+        <p>🔒 اتصال آمن ومشفر</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      
+      if (!username || !password) {
+        showError('يرجى إدخال اسم المستخدم وكلمة المرور');
+        return;
+      }
+      
+      setLoading(true);
+      hideError();
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          window.location.href = '/';
+        } else {
+          showError(data.error || 'فشل تسجيل الدخول');
+        }
+      } catch (error) {
+        showError('خطأ في الاتصال بالخادم');
+      } finally {
+        setLoading(false);
+      }
+    });
+    
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+    
+    function hideError() {
+      errorDiv.classList.add('hidden');
+    }
+    
+    function setLoading(loading) {
+      loginBtn.disabled = loading;
+      loginBtn.querySelector('.btn-text').classList.toggle('hidden', loading);
+      loginBtn.querySelector('.btn-loading').classList.toggle('hidden', !loading);
+    }
+  </script>
+</body>
+</html>

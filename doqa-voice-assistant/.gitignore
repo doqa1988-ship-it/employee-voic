@@ -1,0 +1,30 @@
+# البيئة والأسرار
+.env
+.env.local
+.env.*.local
+
+# التبعيات
+node_modules/
+
+# قاعدة البيانات المحلية
+data/db.json
+
+# السجلات
+logs/
+*.log
+npm-debug.log*
+
+# نظام التشغيل
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# بناء مؤقت
+dist/
+build/
+.cache/

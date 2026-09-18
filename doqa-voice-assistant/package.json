@@ -1,0 +1,36 @@
+{
+  "name": "doqa-voice-assistant",
+  "version": "1.0.0",
+  "description": "مساعد دقة الصوتي الشخصي - مساعد ذكاء اصطناعي للمكالمات الهاتفية عبر Twilio و OpenAI Realtime",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test src/**/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "twilio": "^5.3.0",
+    "dotenv": "^16.4.5",
+    "bcryptjs": "^2.4.3",
+    "express-session": "^1.18.0",
+    "uuid": "^10.0.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "twilio",
+    "openai",
+    "realtime",
+    "voice-assistant",
+    "arabic",
+    "iraqi"
+  ],
+  "author": "Doqa",
+  "license": "MIT"
+}
